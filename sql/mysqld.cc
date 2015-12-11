@@ -543,6 +543,7 @@ ulong specialflag=0;
 ulong binlog_cache_use= 0, binlog_cache_disk_use= 0;
 ulong binlog_stmt_cache_use= 0, binlog_stmt_cache_disk_use= 0;
 ulong max_connections, max_connect_errors;
+ulong super_connections;
 ulong rpl_stop_slave_timeout= LONG_TIMEOUT;
 my_bool log_bin_use_v1_row_events= 0;
 bool thread_cache_size_specified= false;
@@ -6115,12 +6116,12 @@ static void create_new_thread(THD *thd)
 
   /*
     Don't allow too many connections. We roughly check here that we allow
-    only (max_connections + 1) connections.
+    only (max_connections + super_connections) connections.
   */
 
   mysql_mutex_lock(&LOCK_connection_count);
 
-  if (connection_count >= max_connections + 1 || abort_loop)
+  if (connection_count >= max_connections + super_connections || abort_loop)
   {
     mysql_mutex_unlock(&LOCK_connection_count);
 
